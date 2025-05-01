@@ -5,7 +5,6 @@
 #include "Running.h"
 #include "SocCom.h"
 
-
 // SocCom
 
 SocCom::SocCom()
@@ -16,9 +15,7 @@ SocCom::~SocCom()
 {
 }
 
-
 // SocCom 멤버 함수
-
 
 void SocCom::Init(HWND hWnd)
 {

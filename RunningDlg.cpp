@@ -117,9 +117,6 @@ BOOL CRunningDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// 시스템 메뉴에 "정보..." 메뉴 항목을 추가합니다.
-
-	// IDM_ABOUTBOX는 시스템 명령 범위에 있어야 합니다.
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
 
@@ -137,10 +134,8 @@ BOOL CRunningDlg::OnInitDialog()
 		}
 	}
 
-	// 이 대화 상자의 아이콘을 설정합니다.  응용 프로그램의 주 창이 대화 상자가 아닐 경우에는
-	//  프레임워크가 이 작업을 자동으로 수행합니다.
-	SetIcon(m_hIcon, TRUE);			// 큰 아이콘을 설정합니다.
-	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
+	SetIcon(m_hIcon, TRUE);
+	SetIcon(m_hIcon, FALSE);
 
 	UpdateData(TRUE);
 	m_socCom.Create();
@@ -150,7 +145,6 @@ BOOL CRunningDlg::OnInitDialog()
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
 	SetTimer(1, 50, nullptr);
 	SetTimer(2, 100, nullptr);
-	image.Load(L"images\\ma.png");
 	man->LoadImages();
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
@@ -179,64 +173,44 @@ void CRunningDlg::OnSysCommand(UINT nID, LPARAM lParam)
 
 void CRunningDlg::OnPaint()
 {
-	if (IsIconic())
-	{
-		CPaintDC dc(this); // 그리기를 위한 디바이스 컨텍스트입니다.
+	CPaintDC dc(this);
 
-		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
+	CRect rect;
+	this->GetClientRect(&rect);
 
-		// 클라이언트 사각형에서 아이콘을 가운데에 맞춥니다.
-		int cxIcon = GetSystemMetrics(SM_CXICON);
-		int cyIcon = GetSystemMetrics(SM_CYICON);
-		CRect rect;
-		GetClientRect(&rect);
-		int x = (rect.Width() - cxIcon + 1) / 2;
-		int y = (rect.Height() - cyIcon + 1) / 2;
+	CDC MemDC;
+	CBitmap* pOldBitmap, bmp;
 
-		// 아이콘을 그립니다.
-		dc.DrawIcon(x, y, m_hIcon);
-	}
-	else
-	{
-		CPaintDC dc(this);
-
-		CRect rect;
-		this->GetClientRect(&rect);
-
-		CDC MemDC;
-		CBitmap* pOldBitmap, bmp;
-
-		MemDC.CreateCompatibleDC(&dc);
-		bmp.CreateCompatibleBitmap(&dc, rect.Width(), rect.Height());
-		pOldBitmap = MemDC.SelectObject(&bmp);
-		MemDC.PatBlt(0, 0, rect.Width(), rect.Height(), WHITENESS);
+	MemDC.CreateCompatibleDC(&dc);
+	bmp.CreateCompatibleBitmap(&dc, rect.Width(), rect.Height());
+	pOldBitmap = MemDC.SelectObject(&bmp);
+	MemDC.PatBlt(0, 0, rect.Width(), rect.Height(), WHITENESS);
 
 
-		CString str;
-		str.Format(L"<- 이동   SPACE 점프   이동 ->");
-		MemDC.TextOutW(175, 10, str);
-		CString str1;
-		str1.Format(L"F5 리셋");
-		MemDC.TextOutW(250, 40, str1);
-		MemDC.TextOutW(400, 40, time);
-		CString str2;
-		str2.Format(L"최고 기록");
-		MemDC.TextOutW(20, 10, str2);
-		bestTime.Format(L"%d:%d:%d", bestM, bestS, bestDe);
-		MemDC.TextOutW(20, 40, bestTime);
+	CString str;
+	str.Format(L"<- 이동   SPACE 점프   이동 ->");
+	MemDC.TextOutW(175, 10, str);
+	CString str1;
+	str1.Format(L"F5 리셋");
+	MemDC.TextOutW(250, 40, str1);
+	MemDC.TextOutW(400, 40, time);
+	CString str2;
+	str2.Format(L"최고 기록");
+	MemDC.TextOutW(20, 10, str2);
+	bestTime.Format(L"%d:%d:%d", bestM, bestS, bestDe);
+	MemDC.TextOutW(20, 40, bestTime);
 
-		man->Draw(MemDC);
-		object->Draw(&MemDC);
+	man->Draw(MemDC);
+	object->Draw(&MemDC);
 
-		dc.BitBlt(0, 0, rect.Width(), rect.Height(), &MemDC, 0, 0, SRCCOPY);
+	dc.BitBlt(0, 0, rect.Width(), rect.Height(), &MemDC, 0, 0, SRCCOPY);
 
-		MemDC.SelectObject(pOldBitmap);
+	MemDC.SelectObject(pOldBitmap);
 
-		MemDC.DeleteDC();
-		bmp.DeleteObject();
+	MemDC.DeleteDC();
+	bmp.DeleteObject();
 
-		CDialogEx::OnPaint();
-	}
+	CDialogEx::OnPaint();	
 }
 
 // 사용자가 최소화된 창을 끄는 동안에 커서가 표시되도록 시스템에서
